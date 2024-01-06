@@ -4,6 +4,7 @@ use std::{
 };
 
 /// ## i18n name enum
+#[derive(Clone, Debug)]
 pub enum I18ns {
     /// 简体中文(中国)
     ZHCN,
