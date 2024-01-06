@@ -10,9 +10,12 @@ use std::{
     str::FromStr,
 };
 
-#[derive(Debug)]
+/// I18n Loader
+/// It will load the configuration and i18n json files
+/// you can know target and sys language in this struct
+#[derive(Debug, Clone)]
 pub struct Loader {
-    sources: Vec<DirEntry>,
+    sources: Vec<PathBuf>,
     target: I18ns,
     sys_lang: I18ns,
 }
@@ -37,8 +40,8 @@ impl Loader {
         let sources = read_dir(source)
             .unwrap()
             .into_iter()
-            .map(|dir| dir.unwrap())
-            .collect::<Vec<DirEntry>>();
+            .map(|dir| dir.unwrap().path())
+            .collect::<Vec<PathBuf>>();
         let sys_lang = Loader::get_sys_lang();
         Loader {
             sources,
@@ -76,6 +79,18 @@ impl Loader {
             }
             Err(e) => panic!("{}", e),
         }
+    }
+    pub fn set_target(&mut self, target: I18ns) {
+        self.target = target;
+    }
+    pub fn target(&self) -> &I18ns {
+        &self.target
+    }
+    pub fn sources(&self) -> &Vec<PathBuf> {
+        &self.sources
+    }
+    pub fn sys_lang(&self) -> &I18ns {
+        &self.sys_lang
     }
 }
 
