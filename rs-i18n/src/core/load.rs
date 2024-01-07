@@ -33,8 +33,29 @@ impl Default for Loader {
 
 impl Loader {
     /// Build a new Loader with configurations
-    pub fn new() -> Self {
-        Loader::load(Loader::get_configuration().as_path())
+    /// ## params
+    /// 1. path - `Option<&str>` : path to load i18n json files (absolute path see following)
+    /// ## absoulte path
+    /// if use absolute path, you should pay attention that the path should write from root
+    ///
+    /// means :
+    ///
+    /// It is an absolute path based on the root directory as the standard
+    ///
+    /// ````
+    /// -- your project
+    /// |---- src
+    /// |       |-- main.rs (write Loader::new(Some("./i18n")))
+    /// |---- i18n
+    /// |       |-- en_US.json
+    /// |       |-- zh_CN.json
+    /// ````
+    pub fn new(path: Option<&str>) -> Self {
+        let path = match path {
+            Some(p) => PathBuf::from(p),
+            None => Loader::get_configuration(),
+        };
+        Loader::load(path.as_path())
     }
     /// Build a new Loader with specified target source path
     pub fn load(source: &Path) -> Self {
@@ -106,7 +127,7 @@ mod test_loader {
     }
     #[test]
     fn test_new_loader() {
-        let loader = Loader::new();
+        let loader = Loader::new(None);
         dbg!(loader);
     }
     #[test]

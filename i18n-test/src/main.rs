@@ -4,7 +4,7 @@ extern crate lazy_static;
 use rs_i18n::{I18ns, Loader, UseI18n};
 
 lazy_static! {
-    static ref LOADER: Loader = Loader::new();
+    static ref LOADER: Loader = Loader::new(Some("E:\\Rust\\try\\rs-i18n-all\\i18n-test\\i18n"));
 }
 fn main() {
     let mut i18n = UseI18n::new(&LOADER);
