@@ -7,7 +7,7 @@ mod i18n_dict;
 use i18n_dict::I18nDict;
 
 lazy_static! {
-    static ref LOADER: Loader = Loader::new(Some("E:\\Rust\\try\\rs-i18n-all\\i18n-test\\i18n"));
+    static ref LOADER: Loader = Loader::new(Some("./i18n"));
 }
 fn main() {
     // print!("{:?}", I18nDict::HELLO);

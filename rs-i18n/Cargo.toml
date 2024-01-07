@@ -1,7 +1,12 @@
 [package]
 name = "rs-i18n"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
+description = "A lightweight and compact I18n library"
+authors = ["syf20020816@outlook.com"]
+license = "MIT"
+repository = "https://github.com/Surrealism-All/rs-i18n"
+keywords = ["i18n","rs-i18n","I18n"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

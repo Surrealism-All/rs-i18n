@@ -21,7 +21,7 @@ pub mod names;
 ///    static ref LOADER: Loader = Loader::new();
 /// }
 /// fn main() {
-///    let mut i18n = UseI18n::new(&LOADER);
+///    let mut i18n = UseI18n::new(&LOADER,None);
 ///    i18n.set_lang(I18ns::ENUS);
 ///    println!("{}", i18n.t("HELLO"));
 /// }
