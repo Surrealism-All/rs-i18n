@@ -10,7 +10,7 @@ mod tests {
     #[test]
     fn common_trans() {
         let loader = Loader::new(None);
-        let mut i18n = UseI18n::new(&loader);
+        let mut i18n = UseI18n::new(&loader,None);
         i18n.set_lang(I18ns::ENUS);
         let hello_str = i18n.t("HELLO");
         println!("{}", hello_str);

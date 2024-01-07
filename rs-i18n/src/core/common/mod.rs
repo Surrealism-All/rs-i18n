@@ -1,9 +1,12 @@
+use self::dev::Dev;
 use self::names::I18ns;
 use crate::Loader;
 use serde_json::Value;
 use std::collections::HashMap;
-use std::{fs, mem};
+use std::fs;
+use std::path::Path;
 
+pub mod dev;
 pub mod names;
 
 /// ## I18n core
@@ -27,16 +30,22 @@ pub struct UseI18n<'a> {
     lang: I18ns,
     data_source: HashMap<String, String>,
     loader: &'a Loader,
+    dev_path: Option<&'a str>,
 }
 
 impl<'a> UseI18n<'a> {
-    pub fn new(loader: &'a Loader) -> Self {
+    pub fn new(loader: &'a Loader, dev_path: Option<&'a str>) -> Self {
         let lang = loader.target().lock().unwrap().clone();
         let data_source = UseI18n::get_data_source(loader);
+        match dev_path {
+            Some(target_file) => Dev::build(data_source.clone(), Path::new(target_file)),
+            None => (),
+        };
         UseI18n {
             lang: lang.clone(),
             data_source,
             loader,
+            dev_path,
         }
     }
     fn get_data_source(loader: &'a Loader) -> HashMap<String, String> {
@@ -79,6 +88,13 @@ impl<'a> UseI18n<'a> {
         let _ = self.loader.set_target(lang.clone());
         //reload
         self.data_source = UseI18n::get_data_source(self.loader);
+        match self.dev_path {
+            Some(target_file) => Dev::build(self.data_source.clone(), Path::new(target_file)),
+            None => (),
+        };
         self.lang = lang;
+    }
+    pub fn data_source(&self) -> &HashMap<String, String> {
+        &self.data_source
     }
 }
