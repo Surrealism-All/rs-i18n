@@ -2,19 +2,29 @@ use self::names::I18ns;
 use crate::Loader;
 use serde_json::Value;
 use std::collections::HashMap;
-use std::fs;
+use std::{fs, mem};
 
 pub mod names;
 
-pub struct UseI18n {
+pub struct UseI18n<'a> {
     lang: I18ns,
     data_source: HashMap<String, String>,
+    loader: &'a Loader,
 }
 
-impl UseI18n {
-    pub fn new(loader: &Loader) -> Self {
+impl<'a> UseI18n<'a> {
+    pub fn new(loader: &'a Loader) -> Self {
+        let lang = loader.target().lock().unwrap().clone();
+        let data_source = UseI18n::get_data_source(loader);
+        UseI18n {
+            lang: lang.clone(),
+            data_source,
+            loader,
+        }
+    }
+    fn get_data_source(loader: &'a Loader) -> HashMap<String, String> {
         let paths = loader.sources();
-        let lang = loader.target();
+        let lang = loader.target().lock().unwrap().clone();
         let target = paths
             .iter()
             .find(|path| {
@@ -33,14 +43,11 @@ impl UseI18n {
             let data_source = map
                 .clone()
                 .into_iter()
-                .map(|(k, v)| (k, v.to_string()))
+                .map(|(k, v)| (k, v.as_str().unwrap().to_string()))
                 .collect::<Vec<(String, String)>>()
                 .into_iter()
                 .collect::<HashMap<String, String>>();
-            UseI18n {
-                lang: lang.clone(),
-                data_source,
-            }
+            return data_source;
         } else {
             panic!("Cannot parse target i18n json data");
         }
@@ -50,5 +57,11 @@ impl UseI18n {
             Some(res) => res.to_string(),
             None => String::from(from),
         }
+    }
+    pub fn set_lang(&mut self, lang: I18ns) {
+        let _ = self.loader.set_target(lang.clone());
+        //reload
+        self.data_source = UseI18n::get_data_source(self.loader);
+        self.lang = lang;
     }
 }

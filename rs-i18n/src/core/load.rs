@@ -2,9 +2,10 @@ use super::common::names::I18ns;
 use super::constants::{TARGET_CONFIG_NAME, TARGET_DIR};
 use serde_json::{self, Value};
 use std::fs;
+use std::sync::{Arc, Mutex};
 use std::{
     env::{self, current_dir},
-    fs::{read_dir, DirEntry, File},
+    fs::{read_dir, File},
     io::Read,
     path::{Path, PathBuf},
     str::FromStr,
@@ -16,7 +17,7 @@ use std::{
 #[derive(Debug, Clone)]
 pub struct Loader {
     sources: Vec<PathBuf>,
-    target: I18ns,
+    target: Arc<Mutex<I18ns>>,
     sys_lang: I18ns,
 }
 
@@ -45,7 +46,7 @@ impl Loader {
         let sys_lang = Loader::get_sys_lang();
         Loader {
             sources,
-            target: sys_lang.clone(),
+            target: Arc::new(Mutex::new(sys_lang.clone())),
             sys_lang,
         }
     }
@@ -80,11 +81,12 @@ impl Loader {
             Err(e) => panic!("{}", e),
         }
     }
-    pub fn set_target(&mut self, target: I18ns) {
-        self.target = target;
+    pub fn set_target(&self, target: I18ns) {
+        let mut target_lock = self.target.lock().unwrap();
+        *target_lock = target;
     }
-    pub fn target(&self) -> &I18ns {
-        &self.target
+    pub fn target(&self) -> Arc<Mutex<I18ns>> {
+        Arc::clone(&self.target)
     }
     pub fn sources(&self) -> &Vec<PathBuf> {
         &self.sources
